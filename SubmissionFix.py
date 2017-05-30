@@ -121,8 +121,8 @@ def untar(directory, tarry):
         try:
             tar = tarfile.open(tarry)
         except tarfile.ReadError:
-            print ("Warning: Could not open tar file. "
-                    "The file could have been compressed as another type and renamed. "
+            print("Warning: Could not open tar file. " +\
+                    "The file could have been compressed as another type and renamed. " +\
                     "File: " + tarry)
             return
 
@@ -134,7 +134,7 @@ def untar(directory, tarry):
             if os.path.isfile(backup):
                 os.remove(backup)
         except struct.error:
-            print ("Error: Python extraction failed. Extract backup tar manually. "
+            print("Error: Python extraction failed. Extract backup tar manually. " +\
                     "File: " + tarry)
 
         tar.close()
@@ -155,7 +155,7 @@ def systemTar(directory, tarry):
         process = Popen(['tar', '-xzvf', tarry, '-C', directory], stdout=PIPE, stderr=PIPE)
         stdout, stderr = process.communicate()
         if process.returncode:
-            print "System tar extraction failed."
+            print("System tar extraction failed.")
         return process.returncode
     except:
         return 1
@@ -173,7 +173,7 @@ def prepareTimeCheck(time):
         time: duedate timestamp in format 'mm/dd/yy HH:MM'
     """
     if not findTime :
-        print "\nModule pytz not found. To use the late submission checking feature, please install pytz.\n"
+        print("\nModule pytz not found. To use the late submission checking feature, please install pytz.\n")
         return None
 
     duetime = datetime.strptime(time[0] + " " + time[1], "%m/%d/%y %H:%M")
@@ -243,7 +243,7 @@ class AssignmentManager(object):
             try:
                 os.makedirs(path)
             except OSError:
-                print "Error: Path already exists."
+                print("Error: Path already exists.")
                 self._handleCollision(path)
 
     def _handleCollision(self, path):
@@ -275,7 +275,7 @@ class TSquare(AssignmentManager):
 
         if csv :
             manager.students = manager.readCSV(csv)
-            print "Extracting students using list: {list}.".format(list=csv)
+            print("Extracting students using list: {list}.".format(list=csv))
 
         if path :
             manager.createPath(path)
@@ -284,28 +284,28 @@ class TSquare(AssignmentManager):
         try:
             os.makedirs(tempPath)
         except OSError:
-                print "Error: Temporary extraction path already exists."
+                print("Error: Temporary extraction path already exists.")
 
-        print "Extracting bulk submissions."
+        print("Extracting bulk submissions.")
         manager.extractBulk(zipfile, directory=tempPath)
-        print "Renaming student folders"
+        print("Renaming student folders")
         manager.rename(tempPath)
-        print "Moving submission files."
+        print("Moving submission files.")
         late, noSub = manager.move(tempPath)
-        print "Decompressing any compressed files."
+        print("Decompressing any compressed files.")
         manager._inspectFolders(tempPath, move)
-        print "Moving submissions out of temporary folder."
+        print("Moving submissions out of temporary folder.")
         manager._moveAllFiles(directory, tempPath)
         shutil.rmtree(tempPath)
 
         if findTime and time and not late and not noSub:
-            print "\n\nNo Late Submissions \n "
+            print("\n\nNo Late Submissions \n ")
         if late :
-            print "\n\nLate Submissions: "
-            print '\n'.join(late)
+            print("\n\nLate Submissions: ")
+            print('\n'.join(late))
         if noSub :
-            print "\n\nNo Submissions: "
-            print '\n'.join(noSub)
+            print("\n\nNo Submissions: ")
+            print('\n'.join(noSub))
 
     def __init__(self, duetime=None, students=None):
         self.duetime = duetime
@@ -379,7 +379,7 @@ class TSquare(AssignmentManager):
                     fmt = '%m/%d/%Y  %H:%M'
                     return (subtime.strftime(fmt), student)
                 return None
-        print "Warning: No timestamp found for " + student
+        print("Warning: No timestamp found for " + student)
 
     def _moveFeedbackAttachments(self, source, dest):
         """Moves the Feedback Attachment(s) folder."""
@@ -499,7 +499,7 @@ class TSquare(AssignmentManager):
                 try:
                     shutil.rmtree(currentFolder)
                 except OSError:
-                    print "Error: Unable to remove path: " + os.path.abspath(path)
+                    print("Error: Unable to remove path: " + os.path.abspath(path))
 
     def _flattenAllLevels(self, source):
         """Flatten the source directory's struture by all levels."""
@@ -540,11 +540,11 @@ class Canvas(AssignmentManager):
 
         if csv :
             manager.students = manager.readCSV(csv)
-            print "Extracting students using list: {list}.".format(list=csv)
+            print("Extracting students using list: {list}.".format(list=csv))
 
         if section:
             manager.students = manager.sections[section.upper()]
-            print "Extracting only section {section}.".format(section=section.upper())
+            print("Extracting only section {section}.".format(section=section.upper()))
 
         if path :
             manager.createPath(path)
@@ -553,15 +553,15 @@ class Canvas(AssignmentManager):
         try:
             os.makedirs(tempPath)
         except OSError:
-                print "Error: Temporary extraction path already exists."
+                print("Error: Temporary extraction path already exists.")
 
-        print "Extracting bulk submissions."
+        print("Extracting bulk submissions.")
         manager.extractBulk(zipfile, directory=tempPath)
-        print "Moving and renaming submission files."
+        print("Moving and renaming submission files.")
         folders = manager.move(tempPath, roll, zipfile, csv)
-        print "Decompressing any compressed files."
+        print("Decompressing any compressed files.")
         manager._inspectFolders(tempPath, folders, move)
-        print "Moving submissions out of temporary folder."
+        print("Moving submissions out of temporary folder.")
         manager._moveAllFiles(directory, tempPath)
         shutil.rmtree(tempPath)
 
@@ -611,7 +611,7 @@ class Canvas(AssignmentManager):
             if squishedName.upper() in self.roll.keys():
                 student = self.roll[squishedName.upper()]
             else:
-                print "Warning: {student} not found in roll. Skipping.".format(student=squishedName)
+                print("Warning: {student} not found in roll. Skipping.".format(student=squishedName))
                 continue
 
             if any([s.upper() == student.upper() for s in students]):
@@ -663,8 +663,8 @@ class Canvas(AssignmentManager):
                 newPath = os.path.join(studentFolder, newFilename)
 
                 if os.path.exists(newPath):
-                    print ("Warning: {student} has a filename collision on '{file}'."
-                            " The student may have named files using the format 'file-1.txt' on purpose."
+                    print("Warning: {student} has a filename collision on '{file}'." +\
+                            " The student may have named files using the format 'file-1.txt' on purpose." +\
                             " Please manually check, move, and rename their files.".format(student=student, file=newFilename))
                     continue
                 shutil.move(os.path.join(directory, filename), newPath)
@@ -735,7 +735,7 @@ class Canvas(AssignmentManager):
                 try:
                     shutil.rmtree(currentFolder)
                 except OSError:
-                    print "Error: Unable to remove path: " + os.path.abspath(path)
+                    print("Error: Unable to remove path: " + os.path.abspath(path))
 
     def _flattenAllLevels(self, source):
         """Flatten the source directory's struture by all levels."""
@@ -804,7 +804,7 @@ def main(sysargs):
         # there will probably only be one subparser_action,
         # but better save than sorry
         for subparsers_action in subparsers_actions:
-            # get all subparsers and print help
+            # get all subparsers and print(help)
             for choice, subparser in subparsers_action.choices.items():
                 print("\nSubmission Manager '{}'".format(choice))
                 print(subparser.format_help())
@@ -818,7 +818,7 @@ def main(sysargs):
     elif args.action == "canvas":
         Canvas.execute(args.bulksubmission, args.roll, args.path, args.csv, args.section, args.move)
 
-    print "\nDone"
+    print("\nDone")
 
 
 if __name__ == '__main__' :
